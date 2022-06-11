@@ -53,7 +53,7 @@ function addClient()
     myClient.timerSpeed=(n-1)*15
     myClient.timer=myClient.timerSpeed
    
-    myClient.timerSpeedOrder=50
+    myClient.timerSpeedOrder=120
     myClient.timerOrder=myClient.timerSpeedOrder
    
     myClient.bOnStart=false

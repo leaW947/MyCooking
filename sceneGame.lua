@@ -165,7 +165,7 @@ local function updateGame(dt)
   
   --------timer
   if gameplayService.timerGame<=1 then
-    
+    love.audio.stop()
     ---------------victory---------
     if gameplayService.nbClientHappy>=gameplayService.targetNbClientHappy then
       

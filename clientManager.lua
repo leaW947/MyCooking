@@ -53,7 +53,7 @@ function addClient()
     myClient.timerSpeed=(n-1)*15
     myClient.timer=myClient.timerSpeed
    
-    myClient.timerSpeedOrder=120
+    myClient.timerSpeedOrder=80
     myClient.timerOrder=myClient.timerSpeedOrder
    
     myClient.bOnStart=false
@@ -137,7 +137,7 @@ function ClientManager.update(dt)
         if myClient.timer<=0 then
           ------------------start client-----------
           myClient.timer=myClient.timerSpeed
-          myClient.timerOrder=myClient.timerSpeedOrder/5
+          myClient.timerOrder=myClient.timerSpeedOrder/4
         
           myClient.bOnStart=true
         

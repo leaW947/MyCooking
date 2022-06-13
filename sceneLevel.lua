@@ -470,7 +470,9 @@ function SceneLevel.keypressed(key)
         if gameplayService.lstLevels[myLevel.num].bIsUnlock then
           
           if myLevel.num<=gameplayService.nbLevelUnlock then
+            
             gameplayService.currentLevel=myLevel.num
+            
             love.audio.stop(truck.sound)
             sceneLoader.init("gameplay")
             

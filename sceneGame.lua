@@ -55,22 +55,22 @@ local function getValueLevel(pLevel)
     
   elseif pLevel==2 then 
     
-    gameplayService.targetNbClientHappy=10
+    gameplayService.targetNbClientHappy=7
     gameplayService.price=2.50
     
   elseif pLevel==3 then
     
-    gameplayService.targetNbClientHappy=12
+    gameplayService.targetNbClientHappy=10
     gameplayService.price=3
      
   elseif pLevel==4 then
   
-    gameplayService.targetNbClientHappy=15
+    gameplayService.targetNbClientHappy=12
     gameplayService.price=3
   
   elseif pLevel==5 then
     
-    gameplayService.targetNbClientHappy=20
+    gameplayService.targetNbClientHappy=13
     gameplayService.price=3.50
     
   end
@@ -315,6 +315,8 @@ function SceneGame.draw()
   mealManager.draw()
   foodManager.draw()
   
+  objectManager.drawKnifeAndPeeler()
+  
   objectManager.drawObjectMove()
   foodManager.drawFoodMove()
   
@@ -330,9 +332,9 @@ end
 
 local function mousepressedGame(x,y,btn)
   
+  mealManager.mousepressed(x,y,btn)
   foodManager.mousepressed(x,y,btn)
   objectManager.mousepressed(x,y,btn)
-  mealManager.mousepressed(x,y,btn)
   clientManager.mousepressed(x,y,btn)
   
 end

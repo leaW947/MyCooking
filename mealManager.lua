@@ -736,8 +736,6 @@ local function orderVerification(pTicket)
     client.bIsOrderFinish=true
   end
   
-  gameplayService.foodManager.load(gameplayService)
-  
   local object=gameplayService.objectManager.getObject("bowl")
   
   if object==nil then
@@ -754,6 +752,18 @@ local function orderVerification(pTicket)
       
       objectShadow.bIsFull=false
       objectShadow.sprite.bIsVisible=true
+    end
+    
+    -----delete food
+    for n=#lstCurrentIngredient,1,-1 do
+      local ingredient=lstCurrentIngredient[n]
+      
+      local food=gameplayService.foodManager.getFoodState(" ",ingredient,"")
+      
+      if food~=nil then
+        gameplayService.foodManager.deleteFood(ingredient," ")
+      end
+      
     end
     
     object.bInShadow=false
@@ -812,44 +822,39 @@ function MealManager.mousepressed(x,y,btn)
         
         local bCollideMeal=gameplayService.utils.checkCollision(myMeal.sprite.x,myMeal.sprite.y,myMeal.sprite.width,myMeal.sprite.height,x,y,1,1)
         
+        local bCollideObject=false
+        local bCollideFood=false
+        
+        local currentObject=gameplayService.objectManager.getCurrentObject()
+        local currentFood=gameplayService.foodManager.getCurrentFood()
+        
+        if currentObject~=nil then
+          
+          bCollideObject=gameplayService.utils.checkCollision(myMeal.sprite.x,myMeal.sprite.y,myMeal.sprite.width,myMeal.sprite.height,currentObject.sprite.x,currentObject.sprite.y,currentObject.sprite.width,currentObject.sprite.height)
+          
+        end
+          
+        if currentFood~=nil then
+          
+          bCollideFood=gameplayService.utils.checkCollision(myMeal.sprite.x,myMeal.sprite.y,myMeal.sprite.width,myMeal.sprite.height,currentFood.x,currentFood.y,currentFood.width,currentFood.height)
+          
+        end
+        
         if bCollideMeal then
+        
+          if not bCollideFood and not bCollideObject then
           
-          if gameplayService.currentLevel~=1 then
-            
-            local bIsMoveObject=gameplayService.objectManager.isMoveObject()
-            local bIsStateEmptyFood=gameplayService.foodManager.isStateEmptyFood(#myMeal.lstIngredient)
-          
-            if not bIsMoveObject and bIsStateEmptyFood then
-            
-              if not bIsFinishMeal then
-                bIsFinishMeal=true
-              else
-                bIsFinishMeal=false
-              end
-              
-              return
-              
+            if not bIsFinishMeal then
+              bIsFinishMeal=true
+            else
+              bIsFinishMeal=false
             end
             
-            
-          else
-            
-            local bIsMoveObject=gameplayService.objectManager.isMoveObject()
-            
-            if not bIsMoveObject then
-              
-              if not bIsFinishMeal then
-                bIsFinishMeal=true
-              else
-                bIsFinishMeal=false
-              end
-               
-              return
-            end
-      
+            return
           end
           
         end
+        
       end
       
     end

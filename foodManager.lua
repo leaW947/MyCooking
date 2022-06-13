@@ -282,6 +282,8 @@ end
 
 function FoodManager.getFood(pType,pCategory)
   
+  local food=nil
+  
   for n=1,#lstFood do
     
     local myFood=lstFood[n]
@@ -289,7 +291,7 @@ function FoodManager.getFood(pType,pCategory)
     if pCategory=="" then
       ------------type------------
       if myFood.type==pType then
-        return myFood
+        food=myFood
       end
       
     else
@@ -298,7 +300,7 @@ function FoodManager.getFood(pType,pCategory)
         
         ---------------category------------
         if myFood.category==pCategory then
-          return myFood
+          food=myFood
         end
         
       end
@@ -308,7 +310,35 @@ function FoodManager.getFood(pType,pCategory)
   end
   
   
-  return nil
+  return food
+end
+
+function FoodManager.getFoodState(pState,pType,pCategory)
+  
+  local food=nil
+  
+  for n=1,#lstFood do
+    
+    local myFood=lstFood[n]
+    
+    if pType=="" then
+    
+      if myFood.category==pCategory and myFood.currentState==pState then
+        food=myFood
+      end
+    
+    else
+      
+      if myFood.type==pType and myFood.currentState==pState then
+        food=myFood
+      end
+      
+    end
+    
+  end
+  
+  return food
+  
 end
 
 
@@ -435,22 +465,13 @@ function FoodManager.getListFood(pLevel,pState,pFutureState)
   return lstFood
 end
 
-function FoodManager.deleteFood(pType)
+function FoodManager.deleteFood(pType,pState)
   
   for n=#lstFood,1,-1 do
     local myFood=lstFood[n]
-    
-    if myFood.type==pType then
+  
+    if myFood.type==pType and myFood.currentState==pState then
       table.remove(lstFood,n)
-      
-      local foodInv=FoodManager.getFoodInv(pType)
-      
-      if foodInv~=nil then
-        foodInv.currentState="no_select"
-      end
-      
-      return
-      
     end
     
   end
@@ -500,25 +521,16 @@ function FoodManager.setPosOnObject(pObject,pFood)
 end
 
 
-function FoodManager.isStateEmptyFood(pNbFood)
-
-  local bIsStateEmpty=false
-  local nbFoodStateEmpty=0
-
-  for n=1,#lstFood do
-    local myFood=lstFood[n]
-    
-    if myFood.currentState=="" then
-      nbFoodStateEmpty=nbFoodStateEmpty+1
-    end
+function FoodManager.getCurrentFood()
   
-  end
+  return currentFood
   
-  if nbFoodStateEmpty>=pNbFood and currentFood==nil then
-    bIsStateEmpty=true
-  end
+end
 
-  return bIsStateEmpty
+function FoodManager.getCurrentFoodCook()
+
+  return currentFoodCook
+
 end
 
 
@@ -532,7 +544,7 @@ function FoodManager.update(dt)
     ------------------------------stop---------
     if myFood.currentState=="STOP" then
       gameplayService.mealManager.addIngredient(myFood.type)
-      myFood.currentState=""
+      myFood.currentState=" "
     end
     
     if myFood.category=="meat" and myFood.currentState=="COOK" and myFood.sprite.bIsVisible then
@@ -846,7 +858,9 @@ local function stateFood()
           food.currentState=newCurrentState
           FoodManager.setPosOnObject(object,food)
           
-          object.food=food
+          if foodInv~=nil then
+            foodInv.currentState="no_select"
+          end
           
           ----------------food visible
           if food.category~="raw_vegetable" and 
@@ -861,7 +875,7 @@ local function stateFood()
             return
           
           else
-          
+           
             if currentFoodCook==nil then
             
               currentFoodCook=currentFood
@@ -873,7 +887,7 @@ local function stateFood()
               
               return
             end
-            
+    
           end
           
         end

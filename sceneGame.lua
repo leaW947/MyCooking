@@ -33,9 +33,40 @@ local BGgame=nil
 local BGstartLevel=nil
 local BGGameover=nil
 local BGvictory=nil
+local explanationPage=nil
 
 local oldStateLevel=""
-local stateLevel={"play","gameover","startLevel","victory"}
+local stateLevel={"play","gameover","startLevel","victory","explanation"}
+
+local function getImgExplanation(pLevel)
+  
+  local img=nil
+  
+  if pLevel==1 then
+    
+    img=gameplayService.assetManager.getImage("images/mealExplanation/soup.png")
+    
+  elseif pLevel==2 then
+    
+    img=gameplayService.assetManager.getImage("images/mealExplanation/fruitSalad.png")
+    
+  elseif pLevel==3 then
+    
+    img=gameplayService.assetManager.getImage("images/mealExplanation/salad.png")
+    
+  elseif pLevel==4 then
+    
+    img=gameplayService.assetManager.getImage("images/mealExplanation/hotdog.png")
+    
+  elseif pLevel==5 then
+    
+    img=gameplayService.assetManager.getImage("images/mealExplanation/burger.png")
+    
+  end
+  
+  return img
+  
+end
 
 local function getValueLevel(pLevel)
   
@@ -150,6 +181,8 @@ function SceneGame.load(pGameplayService,pSceneLoader)
   BGstartLevel=gameplayService.assetManager.getImage("images/BG/BGstartLevel.png")
   BGvictory=gameplayService.assetManager.getImage("images/BG/BGvictory.png")
   
+  explanationPage=getImgExplanation(gameplayService.currentLevel)
+  
   imgSymbol={}
   imgSymbol[1]=gameplayService.assetManager.getImage("images/symbole.png")
   imgSymbol[2]=gameplayService.assetManager.getImage("images/symbole2.png")
@@ -201,7 +234,10 @@ local function updateGame(dt)
 
       
       love.audio.stop(musicGame)
+      
+      gameplayService.lstLevels[gameplayService.currentLevel].bIsUnlock=true
       gameplayService.nbLevelUnlock=gameplayService.nbLevelUnlock+1
+      
       stateLevel="victory"
       
     --------------------gameover----------
@@ -269,7 +305,11 @@ local function drawStateLevel()
   
     textGame.titleStartLevel.draw()
     love.graphics.draw(imgSymbol[1],100,70,0,5,5)
-    
+  
+  elseif stateLevel=="explanation" then
+  
+    love.graphics.draw(explanationPage,100,50)
+  
   elseif stateLevel=="victory" then
   
     love.graphics.draw(BGvictory,100,50)
@@ -379,12 +419,22 @@ function SceneGame.keypressed(key)
       
     elseif key=="return" then
       
+      stateLevel="explanation"
+      
+      return
+    end
+  
+  ---------------------explanation-------------
+  elseif stateLevel=="explanation" then
+  
+    if key=="return" then
+      
       love.audio.play(musicGame)
       stateLevel="play"
       
       return
     end
-  
+    
   -----------victory--------
   elseif stateLevel=="victory" then
   

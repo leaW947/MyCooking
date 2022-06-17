@@ -66,6 +66,12 @@ function SceneLoader.load(pScreenWidth,pScreenHeight)
   assetManager.addImage("images/chrono.png")
   assetManager.addImage("images/smiley.png")
   
+  assetManager.addImage("images/mealExplanation/burger.png")
+  assetManager.addImage("images/mealExplanation/fruitSalad.png")
+  assetManager.addImage("images/mealExplanation/hotdog.png")
+  assetManager.addImage("images/mealExplanation/soup.png")
+  assetManager.addImage("images/mealExplanation/salad.png")
+  
       ---------clients
   for n=1,8 do
     assetManager.addImage("images/clients/client"..n..".png")

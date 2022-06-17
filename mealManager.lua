@@ -24,8 +24,10 @@ function MealManager.deleteIngredient(pIngredientType)
     local ingredient=lstCurrentIngredient[n]
   
     if ingredient==pIngredientType then
+      
       table.remove(lstCurrentIngredient,n)
       return
+      
     end
   
   end
@@ -234,6 +236,7 @@ local function getIngredientMeal(pLevel,pNameMeal)
     
       ingredient.list={"salad","onion","saladCheese"}
       ingredient.str="salad+onion+saladCheese"
+      
     
     elseif pNameMeal=="salad_chicken&Onion" then 
     
@@ -242,13 +245,13 @@ local function getIngredientMeal(pLevel,pNameMeal)
     
     elseif pNameMeal=="salad_cheese&Chicken&Onion" then
     
-      ingredient.list={"salad","chicken","onion"}
-      ingredient.str="salad+chicken+onion"    
+      ingredient.list={"salad","chicken","onion","saladCheese"}
+      ingredient.str="salad+chicken+onion+saladCheese"    
     
     elseif pNameMeal=="salad_cheese&Chiken&Onion&Tomato" then
     
-      ingredient.list={"salad","saladCheese","onion","tomato"}
-      ingredient.str="salad+saladCheese+onion+tomato"
+      ingredient.list={"salad","saladCheese","onion","tomato","chicken"}
+      ingredient.str="salad+saladCheese+onion+tomato+chicken"
     
     elseif pNameMeal=="salad_chicken&Tomato&Onion" then
     
@@ -272,8 +275,8 @@ local function getIngredientMeal(pLevel,pNameMeal)
     
     elseif pNameMeal=="salad_cheese" then
       
-      ingredient.list={"salad","cheese"}
-      ingredient.str="salad+cheese"    
+      ingredient.list={"salad","saladCheese"}
+      ingredient.str="salad+saladCheese"    
     
     elseif pNameMeal=="salad_chicken" then
       ingredient.list={"salad","chicken"}
@@ -591,6 +594,25 @@ function MealManager.getLstMeal()
   return inventory
 end
 
+function MealManager.getCurrentNameMeal()
+  return currentNameMeal
+end
+
+function MealManager.getIngredient(pIngredient)
+  
+  local ingredient=nil
+  
+  for n=#lstCurrentIngredient,1,-1 do
+    
+    if lstCurrentIngredient[n]==pIngredient then
+      ingredient=pIngredient
+    end
+  
+  end
+  
+  return ingredient
+  
+end
 
 function MealManager.update(dt)
 
@@ -601,13 +623,13 @@ function MealManager.update(dt)
       local myMeal=inventory[i]
       
       local strIngredient=""
-        
+      
       if #lstCurrentIngredient==#myMeal.lstIngredient then
         
         -------------list ingredient meal
         for n=1,#myMeal.lstIngredient do
           local ingredient=myMeal.lstIngredient[n]
-          
+       
           local oldIngredient=""
     
           ---------------list ingredient in the plate
@@ -615,7 +637,7 @@ function MealManager.update(dt)
             local currentIngredient=lstCurrentIngredient[n]
           
             if ingredient==currentIngredient and currentIngredient~=oldIngredient then
-             
+              
               oldIngredient=ingredient
               
               if strIngredient=="" then
@@ -623,12 +645,13 @@ function MealManager.update(dt)
               else
                 strIngredient=strIngredient.."+"..ingredient
               end
+              
             end
             
           end
           
         end
-    
+      
         if strIngredient==myMeal.strIngredient then
           
           local object=gameplayService.objectManager.getObject("plate")
@@ -754,14 +777,15 @@ local function orderVerification(pTicket)
       objectShadow.sprite.bIsVisible=true
     end
     
+    
     -----delete food
     for n=#lstCurrentIngredient,1,-1 do
       local ingredient=lstCurrentIngredient[n]
       
-      local food=gameplayService.foodManager.getFoodState(" ",ingredient,"")
+      local food=gameplayService.foodManager.getFood(ingredient,""," ",nil)
       
       if food~=nil then
-        gameplayService.foodManager.deleteFood(ingredient," ")
+        gameplayService.foodManager.deleteFood(food.num)
       end
       
     end
@@ -774,7 +798,7 @@ local function orderVerification(pTicket)
     object.sprite.bIsVisible=false
   
   end
-              
+  
   resetVisible()
   lstCurrentIngredient={}
   

@@ -188,7 +188,7 @@ function SceneLevel.load(pGameplayService,pSceneLoader)
   imgStar=gameplayService.assetManager.getImage("images/star.png")
   imgLevel=gameplayService.assetManager.getImage("images/BG/BGLevel.png")
   
-  
+  gameplayService.nbStars=0
   ----nb stars-------
   for n=1,#gameplayService.lstLevels do
     
@@ -472,7 +472,7 @@ function SceneLevel.keypressed(key)
           if myLevel.num<=gameplayService.nbLevelUnlock then
             
             gameplayService.currentLevel=myLevel.num
-            
+  
             love.audio.stop(truck.sound)
             sceneLoader.init("gameplay")
             

@@ -7,12 +7,21 @@ local nbOrder=0
 
 function addClient()
   
+  local lstMeal=gameplayService.mealManager.getLstMeal()
+  
   local lstNumClient={1,2,3,4,5,6,7,8}
   local lstPosClient={}
   
+  local lstNumMeal={}
+  
+  for n=1,#lstMeal do
+    table.insert(lstNumMeal,n)
+    table.insert(lstNumMeal,n)
+  end
+  
   for n=1,8 do
     
-    local posX=(gameplayService.screenWidth-(gameplayService.screenWidth/4))-((n-1)*100)
+    local posX=(gameplayService.screenWidth-(gameplayService.screenWidth/5))-((n-1)*50)
     table.insert(lstPosClient,posX)
     
   end
@@ -62,15 +71,27 @@ function addClient()
     myClient.bIsOrderFinish=false
     myClient.bIsOrderGood=false
     
-   
-    local lstMeal=gameplayService.mealManager.getLstMeal()
-    local nbMeal=#lstMeal
-    local rndMeal=math.random(1,nbMeal)
+    
+    local rndMeal=math.random(1,#lstNumMeal)
+    local nMeal=lstNumMeal[rndMeal]
+    
+    table.remove(lstNumMeal,rndMeal)
+    
+    if #lstNumMeal<=0 then
+      
+      for n=1,#lstMeal do
+        
+        table.insert(lstNumMeal,n)
+        table.insert(lstNumMeal,n)
+        
+      end
+      
+    end
     
     myClient.order={
       
-      imgMeal=lstMeal[rndMeal].sprite.img,
-      quadMealImg=lstMeal[rndMeal].sprite.lstImage[math.floor(lstMeal[rndMeal].sprite.currentFrame)],
+      imgMeal=lstMeal[nMeal].sprite.img,
+      quadMealImg=lstMeal[nMeal].sprite.lstImage[math.floor(lstMeal[nMeal].sprite.currentFrame)],
       
       imgBubble=gameplayService.assetManager.getImage("images/order/bubble.png"),
       xBubble=0,
@@ -79,7 +100,7 @@ function addClient()
       hBubble=0,
       bOnDisplayBubble=false,
       
-      nameMeal=lstMeal[rndMeal].name
+      nameMeal=lstMeal[nMeal].name
     }
     
     myClient.order.wBubble=myClient.order.imgBubble:getWidth()*3
@@ -258,6 +279,18 @@ function ClientManager.draw()
       
     end
     
+    if myClient.bOnOrderPreparation and myClient.timerOrder>0 and myClient.vx==0 then
+      
+      love.graphics.circle("fill",myClient.sprite.x+(myClient.sprite.width/2),myClient.sprite.y-20,20)
+      
+      love.graphics.setColor(171/255,202/255,216/255)
+      
+      local ratio=myClient.timerOrder/myClient.timerSpeedOrder
+      love.graphics.arc("fill",myClient.sprite.x+(myClient.sprite.width/2),myClient.sprite.y-20,20,0,(math.pi*2)*ratio)
+      love.graphics.setColor(1,1,1)
+      
+    end
+    
     myClient.sprite.draw()
     
   end
@@ -273,8 +306,11 @@ function ClientManager.mousepressed(x,y,btn)
       local myClient=lstClient[n]
       
       local bCollide=gameplayService.utils.checkCollision(myClient.order.xBubble,myClient.order.yBubble,myClient.order.wBubble,myClient.order.hBubble,x,y,1,1)
+      local currentObject=gameplayService.objectManager.getCurrentObject()
+      local currentFood=gameplayService.foodManager.getCurrentFood()
       
-      if bCollide then
+      
+      if bCollide and currentFood==nil and currentObject==nil then
         
         if not myClient.bOnOrderPreparation and myClient.sprite.x>=myClient.targetX then
             

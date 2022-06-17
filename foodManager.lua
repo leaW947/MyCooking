@@ -13,6 +13,8 @@ local nbFood={}
 local sndSaucepan=nil
 local sndpan=nil
 
+local nbFoodNum=0
+
 local function addFoodInv(pType,pCategory,pSprite)
   
   local myFoodInv={}
@@ -28,15 +30,16 @@ local function addFoodInv(pType,pCategory,pSprite)
 end
 
 
-local function addFood(pType,pCategory,pSprite)
+local function addFood(pType,pCategory,pSprite,pNum)
   
   local myFood={}
   
   myFood.type=pType
   myFood.category=pCategory
-  
   myFood.sprite=pSprite
   myFood.sprite.bIsVisible=false
+  
+  myFood.num=pNum
   
   myFood.timerSpeed=3
   myFood.timer=myFood.timerSpeed
@@ -88,11 +91,15 @@ local function getLstNameFood(pLevel)
 end
 
 
-local function initCurrentFood(pType,pSprite)
+local function initCurrentFood(pType,pSprite,pNum)
   
   local myCurrentFood={}
   
   myCurrentFood.type=pType
+  
+  myCurrentFood.num=pNum
+  
+  myCurrentFood.bIsVisible=true
   
   myCurrentFood.x=pSprite.x
   myCurrentFood.y=pSprite.y
@@ -215,13 +222,15 @@ end
 local function initFood(pType)
   
   local img=gameplayService.assetManager.getImage("images/food/food.png")
-  local nbFoodImg=(img:getWidth()/30)*(img:getHeight()/25)
+  local nbFoodImg=math.floor((img:getWidth()/30)*(img:getHeight()/25))
   
   local lstNameFoodImg={"burgerBread","hotdogBread","crouton","steak","chicken","sausage","burgerCheese","saladCheese","tomato","salad","pepper","onionPeel","onion","carrotPeel","carrot","bananaPeel","banana","pearPeel","pear","applePeel","apple","strawberries","ketchup","mustard","maple_syrup"}
   
+  local numFood=nil
+  
   ------------------img food
-  for n=1,nbFoodImg do
-    
+  for n=nbFoodImg,1,-1 do
+  
     if lstNameFoodImg[n]==pType or lstNameFoodImg[n]==pType.."Peel" then
       
       local sprFood=gameplayService.sprite.create(img,0,0)
@@ -231,12 +240,19 @@ local function initFood(pType)
       sprFood.startAnimation("")
         
       local category=getFoodCategory(lstNameFoodImg[n])
-        
-      addFood(lstNameFoodImg[n],category,sprFood)
+      
+      nbFoodNum=nbFoodNum+1
+      addFood(lstNameFoodImg[n],category,sprFood,nbFoodNum)
+      
+      if lstNameFoodImg[n]==pType then
+        numFood=nbFoodNum
+      end
     
     end
     
   end
+  
+  return numFood
   
 end
 
@@ -253,6 +269,7 @@ function FoodManager.load(pGameplayService)
   currentFood=nil
   currentFoodCook=nil
   
+  nbFoodNum=0
   nbFood={}
   
   initInventory(gameplayService.currentLevel)
@@ -280,26 +297,62 @@ function FoodManager.getFoodInv(pType)
 end
 
 
-function FoodManager.getFood(pType,pCategory)
+function FoodManager.getFood(pType,pCategory,pState,pNum)
   
   local food=nil
   
-  for n=1,#lstFood do
-    
+  for n=#lstFood,1,-1 do
     local myFood=lstFood[n]
     
-    if pCategory=="" then
-      ------------type------------
-      if myFood.type==pType then
-        food=myFood
+    if pCategory=="" and pType~="" and pNum==nil then
+      
+      if pState=="" then
+        
+        ------------type------------
+        if myFood.type==pType then
+          food=myFood
+        end
+      
+      else
+        
+        ------------type------------
+        if myFood.type==pType and myFood.currentState==pState then
+          food=myFood
+        end
+      
       end
       
-    else
+    elseif pType=="" and pCategory~="" and pNum==nil then
       
-      if pType=="" then
+      if pState=="" then
         
         ---------------category------------
         if myFood.category==pCategory then
+          food=myFood
+        end
+      
+      else
+        
+         ---------------category------------
+        if myFood.category==pCategory and myFood.currentState==pState then
+          food=myFood
+        end
+        
+      end
+  
+    elseif pType=="" and pCategory=="" and pNum~=nil then
+      
+      if pState=="" then
+        
+        ------------num---------------
+        if myFood.num==pNum then
+          food=myFood
+        end
+        
+      else
+        
+        ------------num---------------
+        if myFood.num==pNum and myFood.currentState==pState then
           food=myFood
         end
         
@@ -311,34 +364,6 @@ function FoodManager.getFood(pType,pCategory)
   
   
   return food
-end
-
-function FoodManager.getFoodState(pState,pType,pCategory)
-  
-  local food=nil
-  
-  for n=1,#lstFood do
-    
-    local myFood=lstFood[n]
-    
-    if pType=="" then
-    
-      if myFood.category==pCategory and myFood.currentState==pState then
-        food=myFood
-      end
-    
-    else
-      
-      if myFood.type==pType and myFood.currentState==pState then
-        food=myFood
-      end
-      
-    end
-    
-  end
-  
-  return food
-  
 end
 
 
@@ -465,26 +490,31 @@ function FoodManager.getListFood(pLevel,pState,pFutureState)
   return lstFood
 end
 
-function FoodManager.deleteFood(pType,pState)
+
+function FoodManager.deleteFood(pNumFood)
   
   for n=#lstFood,1,-1 do
     local myFood=lstFood[n]
-  
-    if myFood.type==pType and myFood.currentState==pState then
+    
+    if myFood.num==pNumFood then
       table.remove(lstFood,n)
     end
     
   end
-  
-  
+
 end
+
 
 function FoodManager.resetVisible()
   
-  for n=1,#lstFood do
+  for n=#lstFood,1,-1 do
     
     local myFood=lstFood[n]
-    myFood.sprite.bIsVisible=false
+    
+    if myFood.currentState==" " or myFood.currentState=="STOP" then
+      myFood.sprite.bIsVisible=false
+    end
+    
   end
   
 end
@@ -537,7 +567,7 @@ end
 function FoodManager.update(dt)
   
   -------------------------------food-----------------------
-  for n=1,#lstFood do
+  for n=#lstFood,1,-1 do
     
     local myFood=lstFood[n]
     
@@ -545,6 +575,11 @@ function FoodManager.update(dt)
     if myFood.currentState=="STOP" then
       gameplayService.mealManager.addIngredient(myFood.type)
       myFood.currentState=" "
+      
+      if myFood.category=="raw_vegetable" and gameplayService.currentLevel==1 then
+        gameplayService.mealManager.addIngredient("water")
+      end
+      
     end
     
     if myFood.category=="meat" and myFood.currentState=="COOK" and myFood.sprite.bIsVisible then
@@ -624,12 +659,11 @@ function FoodManager.update(dt)
     ---------------------------food cut-----------
     if myFood.currentState=="CUT" then
       
-      local foodPeel=FoodManager.getFood(tostring(myFood.type).."Peel","")
+      local foodPeel=FoodManager.getFood(tostring(myFood.type).."Peel","","",nil)
     
       if foodPeel~=nil then
         foodPeel.sprite.bIsVisible=false
       end
-      
       
       myFood.sprite.bIsVisible=true
       currentFoodCook=nil
@@ -637,17 +671,17 @@ function FoodManager.update(dt)
     ----------------------food peel---------------
     elseif myFood.currentState=="PEEL" then
       
-      local foodPeel=FoodManager.getFood(tostring(myFood.type).."Peel","")
-      
+      local foodPeel=FoodManager.getFood(tostring(myFood.type).."Peel","","",nil)
+    
       if foodPeel~=nil then
         foodPeel.sprite.x=myFood.sprite.x
         foodPeel.sprite.y=myFood.sprite.y
         
         foodPeel.sprite.bIsVisible=true
-        myFood.sprite.bIsVisible=false
-        
-        currentFoodCook=nil
       end
+      
+      myFood.sprite.bIsVisible=false
+      currentFoodCook.bIsVisible=false
       
     end
     
@@ -655,11 +689,10 @@ function FoodManager.update(dt)
   
   ---------------------------current food---------------
   if currentFood~=nil then
-    
+  
     local bCollideRectCancel=gameplayService.utils.checkCollision(gameplayService.rectCancel.sprite.x,gameplayService.rectCancel.sprite.y,gameplayService.rectCancel.sprite.width,gameplayService.rectCancel.sprite.height,currentFood.x+(currentFood.width/3),currentFood.y+(currentFood.height/3),currentFood.width/3,currentFood.height/3)
   
     if bCollideRectCancel then
-      
       gameplayService.rectCancel.bIsOpen=true
       gameplayService.rectCancel.sprite.currentFrame=2
       
@@ -668,8 +701,12 @@ function FoodManager.update(dt)
       if foodInv~=nil then
         foodInv.currentState="no_select"
       end
-    
+      
+      FoodManager.deleteFood(currentFood.num)
+
       currentFood=nil
+      
+      return
       
     end
   
@@ -722,28 +759,32 @@ function FoodManager.draw()
   
     end
   
-    myFood.sprite.draw()    
+    myFood.sprite.draw()
   
   end
   
-        --------------------------currentFoodCook-----------
+  --------------------------currentFoodCook-----------
   if currentFoodCook~=nil then
-    love.graphics.draw(currentFoodCook.img,currentFoodCook.lstImage[math.floor(currentFoodCook.currentFrame)],currentFoodCook.x,currentFoodCook.y,0,currentFoodCook.scaleX,currentFoodCook.scaleY)
+      
+    if currentFoodCook.bIsVisible then
+      
+      love.graphics.draw(currentFoodCook.img,currentFoodCook.lstImage[math.floor(currentFoodCook.currentFrame)],currentFoodCook.x,currentFoodCook.y,0,currentFoodCook.scaleX,currentFoodCook.scaleY)
+      
+    end
+    
   end
   
 end
 
 
 local function stateFood()
-  
-  local food=FoodManager.getFood(currentFood.type,"")
+ 
+  local food=FoodManager.getFood("","","",currentFood.num)
   local foodInv=FoodManager.getFoodInv(currentFood.type)
-  
   local newCurrentState=""
   local object=nil
   
   if food~=nil then
-    
     --------------------------------------------STATE NONE----------------------
     if food.currentState=="NONE" then
       
@@ -783,7 +824,7 @@ local function stateFood()
         else
           object=gameplayService.objectManager.getObject("cutting_board")
         end
-        
+  
       -------------------------------------CHEESE-----------------------
       elseif food.category=="cheese" then
         
@@ -812,7 +853,7 @@ local function stateFood()
       end
   
     end
-    
+
   end
   
   ------------------------------------WATER----------------------
@@ -826,77 +867,109 @@ local function stateFood()
     
   end
   
+
   ------------------------------collide with the object
-  if object~=nil and newCurrentState~="" then
+  if object~=nil and object.food==nil and newCurrentState~="" then
+ 
+    local bCollideObject=gameplayService.utils.checkCollision(currentFood.x,currentFood.y,currentFood.width,currentFood.height,object.sprite.x,object.sprite.y,object.sprite.width,object.sprite.height)
     
-    if object.food==nil or object.type=="plate" or object.type=="bowl" then
+    if bCollideObject and object.bInShadow then
       
-      local bCollideObject=gameplayService.utils.checkCollision(currentFood.x,currentFood.y,currentFood.width,currentFood.height,object.sprite.x,object.sprite.y,object.sprite.width,object.sprite.height)
+      local ingredient=gameplayService.mealManager.getIngredient(currentFood.type)
       
-      if bCollideObject and object.bInShadow then
-        
+      if food==nil then
+      
+        -------------------------add water------------
         if currentFood.type=="water" then
           
           if object.sprite.currentFrame==5 then
+            
             ----------------water in the saucepan
-            gameplayService.mealManager.addIngredient("water")
             object.sprite.currentFrame=1
+            currentFood=nil
+            
+            if foodInv~=nil then
+              foodInv.currentState="no_select"
+            end
+            
+            return
           end
-          
-          if foodInv~=nil then
-            foodInv.currentState="no_select"
-          end
-          
-          currentFood=nil
-          
-          return
-          
+      
         end
+      end
+      
+      if food~=nil then
         
-        if food~=nil then
+        ----------------food visible
+        if food.category~="raw_vegetable" and 
+          food.type~="crouton" and 
+          food.type~="chicken" and 
+          food.type~="saladCheese" and
+          food.category~="fruit" then
+          
+          
+          if ingredient~=nil and (object.type=="plate" or object.type=="bowl") then
+            
+            if food.category~="meat" and food.type~="pepper" then
+              return
+            end
+           
+          end
+          
           ----------------------food on object-------------------
+          if food.category=="sauce" and ingredient~=nil then
+            currentFood=nil
+            return
+          end
+          
+          if food.category=="meat" or food.type=="pepper" then
+            object.food=food
+          end
+        
           food.currentState=newCurrentState
           FoodManager.setPosOnObject(object,food)
           
+          food.sprite.bIsVisible=true
+          currentFood=nil
+          
           if foodInv~=nil then
             foodInv.currentState="no_select"
           end
           
-          ----------------food visible
-          if food.category~="raw_vegetable" and 
-            food.type~="crouton" and 
-            food.type~="chicken" and 
-            food.type~="saladCheese" and
-            food.category~="fruit" then
+          return
+        
+        else
+         
+          if foodInv~=nil then
+            foodInv.currentState="no_select"
+          end
+         
+          if currentFoodCook==nil then
             
-            food.sprite.bIsVisible=true
+            object.food=food
+            
+            ----------------------food on object-------------------
+            food.currentState=newCurrentState
+            FoodManager.setPosOnObject(object,food)
+          
+            currentFoodCook=currentFood
+            
+            currentFoodCook.x=object.sprite.x+((object.sprite.width/2)-(currentFoodCook.width/2))
+            currentFoodCook.y=object.sprite.y+((object.sprite.height/2)-(currentFoodCook.height/2))
+            
+           
             currentFood=nil
             
             return
-          
-          else
-           
-            if currentFoodCook==nil then
-            
-              currentFoodCook=currentFood
-              
-              currentFoodCook.x=object.sprite.x+((object.sprite.width/2)-(currentFoodCook.width/2))
-              currentFoodCook.y=object.sprite.y+((object.sprite.height/2)-(currentFoodCook.height/2))
-              
-              currentFood=nil
-              
-              return
-            end
-    
           end
-          
-        end
-    
   
+        end
+        
       end
-      
+  
+
     end
-    
+  
   end
   
 end
@@ -905,6 +978,8 @@ end
 function FoodManager.mousepressed(x,y,btn)
   
   if btn==1 then
+    
+    local currentObject=gameplayService.objectManager.getCurrentObject()
     
     ----------------inventory---------------
     for n=1,#inventory do
@@ -918,27 +993,31 @@ function FoodManager.mousepressed(x,y,btn)
         
       else
         
-        bCollideInventory=gameplayService.utils.checkCollision(x,y,1,1,myFoodInv.sprite.x+(myFoodInv.sprite.width/5),myFoodInv.sprite.y,myFoodInv.sprite.width/3,myFoodInv.sprite.height)
+        bCollideInventory=gameplayService.utils.checkCollision(x,y,1,1,myFoodInv.sprite.x+(myFoodInv.sprite.width/5),myFoodInv.sprite.y+5,myFoodInv.sprite.width/3,myFoodInv.sprite.height)
         
       end
       
-      if bCollideInventory then
+      if bCollideInventory and currentObject==nil then
         
         if myFoodInv.currentState=="no_select" and currentFood==nil then
           myFoodInv.currentState="select"
-          
-          initFood(myFoodInv.type)
-          currentFood=initCurrentFood(myFoodInv.type,myFoodInv.sprite)
-          
-          return
+    
+          local numFood=initFood(myFoodInv.type)
+          currentFood=initCurrentFood(myFoodInv.type,myFoodInv.sprite,numFood)
           
         else
           
           -----------------reset select-----
-          if myFoodInv.category=="sauce" or myFoodInv.category=="water" then
-            myFoodInv.currentState="no_select"
-            currentFood=nil
-            return
+          if (myFoodInv.category=="sauce" or myFoodInv.category=="water") and currentObject==nil then
+            
+            if myFoodInv.type==currentFood.type then
+              
+              myFoodInv.currentState="no_select"
+              currentFood=nil
+              return
+              
+            end
+            
           end
         
         end
@@ -947,11 +1026,11 @@ function FoodManager.mousepressed(x,y,btn)
       
     end
     
+    
     ----------------------------currentFood------------
-    if currentFood~=nil then
+    if currentFood~=nil and currentObject==nil then
       stateFood()
     end
-    
     
   end
   

@@ -85,24 +85,25 @@ deviner qu'elles aliments correspondent au dessin indiquand le plat demandé.
 Maintenant en cuisine!
 
 Les aliments dont on aura besoin sont en bas à gauche de l'écran. 
-Les ustensiles dont on aura besoin sont en bas à droite de l'écran.
+Les ustensiles et objets de cuisine dont on aura besoin sont en bas à droite de l'écran.
 
-	---ce servir des ustensiles----
-Pour prendre un ustensile, il suffit de cliquer sur l'îcone correspondant. Ensuite
+	---ce servir des ustensiles/objets de cuisine----
+Pour prendre un ustensile ou un objet, il suffit de cliquer sur l'îcone correspondant. Ensuite
 il suffit de bouger la souris et l'ustensile bougera en même temps.
 
-Certains ustensiles doivent être posaient. Pour cela il suffit de les posaient sur
+les objets de cuisine doivent être posaient. Pour cela il suffit de les posaient sur
 leurs ombres correspondantent situés sur le plan de travail. Pour cela il suffit de
 cliquer sur l'ombre correspondant à l'ustensile.
 
-Certains ustensiles ne peuvent pas être posaient, juste utilisaient. Ce sont des 
-ustensiles qui n'ont pas d'ombre sur le plan de travail. Si vous voulez plus utiliser
-ce genre d'ustensile, il suffit de recliquer sur l'îcone correspondant et l'ustensile
+Les ustensiles ne peuvent pas être posaient, juste utilisaient. Ce sont des 
+objets qui n'ont pas d'ombre sur le plan de travail. Si vous voulez plus utiliser
+ce genre d'objet, il suffit de recliquer sur l'îcone correspondant et l'ustensile
 disparaitra.
 
-Si on veut jeter un aliment posait sur un ustensile. Il faut prendre l'ustensile et 
+Si on veut jeter un aliment posait sur un objet (cela est possible uniquement si on a 
+appliqué une modification à l'aliment). Il faut prendre l'objet et 
 le diriger vers la poubelle situé tout en bas à droite de l'écran.
-Lorsque l'ustensile touche la poubelle, l'aliment disparaitra et l'ustensile reprendra
+Lorsque l'objet touche la poubelle, l'aliment disparaitra et l'objet reprendra
 sa place initiale.
 
 	---ce servir des aliments------
@@ -110,30 +111,30 @@ Pour prendre un aliment il suffit aussi de cliquer sur l'îcone correspondant et
 bouger la souris. 
 
 Si on veut jeter l'aliment, il suffit de diriger cet aliment vers la poubelle
-situé tout en bas à droite de l'écran. Une fois que l'aliment touche la poubelle,
-il disparaît.
+situé tout en bas à droite de l'écran (cela est possible uniquement si l'aliment n'est pas posait 
+sur un objet). Une fois que l'aliment touche la poubelle, il disparaît.
 
 
 	---------préparer le plat-----
-Pour commencer, il faut prendre un aliment et le poser sur un  ustensile pour le cuisiner. 
-Pour cela il faut que l'ustensile soit posait sur son emplacement attitré. Ensuite il 
-faut cliquer sur l'ustensile où on veux et où on peut poser l'aliment.
+Pour commencer, il faut prendre un aliment et le poser sur un objet pour le cuisiner. 
+Pour cela il faut que l'objet soit posait sur son emplacement attitré. Ensuite il 
+faut cliquer sur l'objet où on veux et où on peut poser l'aliment.
 
-Si l'aliment ne ce pose pas sur l'ustensile sur lequel on a cliquer, c'est qu'on
-doit poser l'aliment sur un autre ustensile.
+Si l'aliment ne ce pose pas sur l'objet sur lequel on a cliquer, c'est qu'on
+doit poser l'aliment sur un autre objet.
 
-Si on prend un ustensile qui ne peux pas être posait, c'est qu'il doit être utilisé
+Si on prend un ustensile qui donc ne peux pas être posait, c'est qu'il doit être utilisé
 sur un aliment. Pour cela il faut prendre l'ustensile et ensuite cliquer sur 
 l'aliment sur lequel on veut l'utiliser.
 
 Si rien ne se passe lorsque qu'on clique sur l'aliment : 
 C'est que soit l'ustensile ne peux pas être utilisé sur cet aliment, soit qu'il 
-faut effectuer une autre opération sur cet aliment avant d'utilisé l'ustensile.
+faut effectuer une autre opération sur cet aliment avant d'utilisé cet ustensile.
 
-Une fois qu'un aliment est posait sur un ustensile et qu'on a effectuer le ou les
-opérations qu'on devait effectuer à ce moment là. On peut cliquer sur l'ustensile 
-où ce trouve l'aliment et le diriger vers un autre ustensile et cliquer sur cette
-autre ustensile pour tranvaser l'aliment en question et pour effectuer d'autre 
+Une fois qu'un aliment est posait sur un objet et qu'on a effectuer le ou les
+opérations qu'on devait effectuer à ce moment là. On peut cliquer sur l'objet
+où ce trouve l'aliment et le diriger vers un autre objet et cliquer sur cette
+autre objet pour tranvaser l'aliment en question et pour effectuer d'autre 
 opération sur celui-ci.
 
 
